@@ -1,0 +1,24 @@
+{
+  "name": "mongo-workout",
+  "version": "1.0.0",
+  "description": "For this assignment, you'll create a workout tracker.  This assignment will require you to create Mongo database with a Mongoose schema and handle routes with Express, along with the front end to interact with said routes.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wmcmillan/mongo-workout.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wmcmillan/mongo-workout/issues"
+  },
+  "homepage": "https://github.com/wmcmillan/mongo-workout#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.10.11"
+  }
+}
