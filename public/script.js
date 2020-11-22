@@ -1,119 +1,68 @@
-let alertTimeout = 0;
+const workoutBtn = $("#workoutBtn");
+const exerciseBtn = $("#exerciseBtn");
+const workoutHistory = $("#workoutsBlock");
+const selectWorkout = $("#selectWorkout");
+const workoutForm = $("#workoutForm");
 
-function writeExercises(id) {
-    $("#exerciseList").html("");
-    $.ajax({
-        url: `/populate/${id}`,
-        method: "GET",
-        success: result => {
-            for (exercise of result[0].exercises) {
-                $("#exerciseList").append(`<li class="col-6">${exercise.name} (Reps: ${exercise.reps})</li>`)
-            }
-        }
-    })
-}
+fetch("/api/workouts")
+    .then(response => response.json())
+    .then(data => {
+        data.forEach(workout => {
+            const newWorkoutEl = $("<div>")
+            const newWorkoutOption = $("<option>")
 
-function writeExerciseForm(buttonTarget) {
-    $("#getFit").append(`
-    <h2>Add Exercise to ${$(buttonTarget).text()}</h2>
-    <form action="/add" method="post">
-        <div class="form-group>
-            <label for="exerciseName">Name of Exercise</label>
-            <input class="form-control" type="text" name="exerciseName" value="" placeholder="Exercise">
-        </div>
-        <div class="form-group">
-            <label for="exerciseReps">Number of Reps</label>
-            <input class="form-control" type="number" name="exerciseReps" value="" placeholder="# of Reps">
-        </div>
-        <button class="btn btn-primary" id="addExercise">Add to Workout</button>
-    </form>
-    `);
-}
+            newWorkoutEl.addClass("card m-2 shadow p-3")
+            newWorkoutEl.attr("id", workout._id)
 
-function writeAllWorkouts(response) {
-    $("#getFit").html(`<h2>Choose a workout routine</h2>`)
-    for (routine of response) {
-        $("#getFit").append(`
-            <button class="btn btn-success workoutBtn" value="${routine._id}">${routine.name}</button>
-        `)
-    }
-    $(".workoutBtn").click(event => {
-        let workoutID = $(event.currentTarget).val();
-        $("#getFit").html(`
-        <h2>Current Routine</h2>
-        <ul id="exerciseList" class="row"></ul>
-        `)
-        writeExercises(workoutID)
-        writeExerciseForm(event.currentTarget)
-        $("#addExercise").click((event) => {
-            event.preventDefault();
-            let numReps = $("input[name*='exerciseReps']").val()
-            let newExercise = {
-                workout: workoutID,
-                name: $("input[name*='exerciseName']").val().trim(),
-                reps: (numReps > 0) ? numReps : undefined
-            }
-            $.ajax({
-                url: "/add",
-                data: newExercise,
-                method: "POST",
-                success: result => {
-                    clearTimeout(alertTimeout);
-                    if (result.errors != undefined) {
-                        if (result.errors.name) {
-                            $(".alert-warning").text("Please enter the exercise you want to add.").attr('style', 'display:block;')
-                        } else if (result.errors.reps) {
-                            $(".alert-warning").text("Please enter the number of reps.").attr('style', 'display:block;')
-                        }
-                        alertTimeout = setTimeout(() => {
-                            $(".alert-warning").attr('style', 'display:none;')
-                        }, 4000)
-                    } else {
-                        writeExercises(result._id);
-                    }
-                }
+            newWorkoutOption.text(workout.name)
+            newWorkoutOption.attr("id", workout._id)
+
+
+
+            const workoutName = $("<h3>")
+            workoutName.text(workout.name)
+
+            newWorkoutEl.append(workoutName)
+            workout.activities.forEach(activity => {
+                // console.log(activity)
+                const newActivity = $("<div>")
+                newActivity.addClass("card m-2 shadow p-3")
+                newActivity.attr("id", activity._id)
+
+                const name = $("<h4>").text(activity.name)
+                const type = $("<p>").text(activity.type)
+                const weight = $("<p>").text(`Weight: ${activity.weight}`)
+                const sets = $("<p>").text(`Sets: ${activity.sets}`)
+                const reps = $("<p>").text(`Reps: ${activity.reps}`)
+                const duration = $("<p>").text(`Duration: ${activity.duration}`)
+                const distance = $("<p>").text(`Distance: ${activity.Distance}`)
+                // const deleteBtn = $("<button>")
+
+                // deleteBtn.text("Delete")
+
+                // deleteBtn.addClass("deleteBtn")
+                // deleteBtn.attr("id",activity._id)
+
+                newActivity.append(name, type, weight, sets, reps, duration, distance)
+                newWorkoutEl.append(newActivity)
+
             })
+            selectWorkout.append(newWorkoutOption)
+            workoutHistory.append(newWorkoutEl)
         })
-    })
-}
+    });
 
-$("#loadWorkout").click(() => {
-    $.ajax({
-        url: "/workouts",
-        method: "GET",
-        success: result => {
-            writeAllWorkouts(result);
+workoutBtn.click(function (event) {
+
+    const data = workoutForm.serialize();
+
+    $.ajax("/api/activity", {
+        type: "POST",
+        data: data
+    }).then(
+        function () {
+            // Reload the page to get the updated list
+            location.reload();
         }
-    })
-});
-
-$("#newWorkout").click(() => {
-    $("#getFit").html(`
-    <form action="/submit" method="post">
-        <div class="form-group">
-            <label for="workoutName">Name of Workout Routine</label>
-            <input class="form-control" type="text" name="workoutName" value="" placeholder="Workout Title">
-        </div>
-        <button class="btn btn-primary" id="createWorkout">Submit</button>
-    </form>
-    `);
-    $("#createWorkout").click((event) => {
-        event.preventDefault();
-        $.ajax({
-            url: "/submit",
-            data: { name: $("input[name*='workoutName']").val().trim() },
-            method: "POST",
-            success: (result) => {
-                clearTimeout(alertTimeout);
-                if (result != 'Workout validation failed') {
-                    location.reload();
-                } else {
-                    $(".alert-warning").text("Please enter the name of your new workout routine.").attr('style', 'display:block;')
-                    alertTimeout = setTimeout(() => {
-                        $(".alert-warning").attr('style', 'display:none;')
-                    }, 4000)
-                }
-            }
-        })
-    })
+    );
 });
