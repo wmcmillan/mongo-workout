@@ -55,14 +55,14 @@ workoutBtn.click(function (event) {
 
     event.preventDefault();
     const data = workoutForm.serialize();
-    
+
     $.ajax("/submit", {
         type: "POST",
         data: data
     }).then(
         function () {
             // Reload the page to get the updated list
-            location.reload();
+            //location.reload();
         }
     );
 });
