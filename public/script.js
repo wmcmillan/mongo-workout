@@ -7,6 +7,7 @@ const workoutForm = $("#workoutForm");
 fetch("/api/workouts")
     .then(response => response.json())
     .then(data => {
+        console.log(data)
         data.forEach(workout => {
             const newWorkoutEl = $("<div>")
             const newWorkoutOption = $("<option>")
