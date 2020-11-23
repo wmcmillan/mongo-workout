@@ -55,7 +55,7 @@ workoutBtn.click(function (event) {
 
     event.preventDefault();
     const data = workoutForm.serialize();
-
+    
     $.ajax("/submit", {
         type: "POST",
         data: data
