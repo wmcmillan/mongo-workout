@@ -17,8 +17,6 @@ fetch("/api/workouts")
             newWorkoutOption.text(workout.name)
             newWorkoutOption.attr("id", workout._id)
 
-
-
             const workoutName = $("<h3>")
             workoutName.text(workout.name)
 
