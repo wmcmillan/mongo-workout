@@ -22,7 +22,7 @@ fetch("/api/workouts")
             workoutName.text(workout.name)
 
             newWorkoutEl.append(workoutName)
-            workout.activities.forEach(activity => {
+            workout.exercises.forEach(activity => {
                 // console.log(activity)
                 const newActivity = $("<div>")
                 newActivity.addClass("card m-2 shadow p-3")
